@@ -4,6 +4,8 @@ from class_idx import class_idx
 from word_idx import word_idx
 from config import Config
 from model import LSTM
+from model import LSTMC
+from model import CLSTM
 from model import TextCNN
 import torch.backends.cudnn as cudnn
 import torch.nn as nn
@@ -24,7 +26,7 @@ valloader = torch.utils.data.DataLoader(
     valset, batch_size=opt.VAL_BATCH_SIZE, shuffle=False)
 print("Loading data successfully!")
 
-net = TextCNN(opt)
+net = LSTMC.Lstm(opt)
 
 if opt.USE_CUDA:
     print('cuda')
@@ -38,7 +40,7 @@ criterion = torch.nn.CrossEntropyLoss()
 def train(epoch):
     net.train()
     print("train epoch:", epoch)
-    optimizer = torch.optim.Adam(net.parameters(), lr=opt.get_lr(epoch))
+    optimizer = torch.optim.Adam(net.parameters(), lr=opt.get_lr(epoch),weight_decay=0.00001)
     for batch_idx, (inputs, targets) in enumerate(trainloader):
         if opt.USE_CUDA:
             inputs, targets = inputs.cuda(), targets.cuda()
@@ -92,7 +94,7 @@ def val(epoch):
     print("f1 for class2:", f1_2)
     print("f1 for class3:", f1_3)
     print("final f1:", f1)
-
+    print("best_f1:", best_f1)
 
 for i in range(opt.NUM_EPOCHS):
     train(i)

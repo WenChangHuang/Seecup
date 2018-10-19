@@ -3,7 +3,7 @@ class Config(object):
     def __init__(self):
         self.USE_CUDA           =       torch.cuda.is_available()
         self.NUM_EPOCHS         =       64
-        self.TRAIN_BATCH_SIZE   =       64
+        self.TRAIN_BATCH_SIZE   =       128
         self.VAL_BATCH_SIZE     =       128
         self.TEST_BATCH_SIZE    =       128
         self.MODEL_FILE         =       './model.t7'
@@ -25,7 +25,9 @@ class Config(object):
         self.SENT_LEN           =       100
 
     def get_lr(self,epoch):
-        if (epoch+1)%10==0 and self.LR>1e-7:
-            self.LR*=0.1
+        if epoch<9:
+            return self.LR
+        elif (epoch+1)%5==0 and self.LR>1e-7:
+            self.LR*=0.5
         print("learning rate:",self.LR)
         return self.LR
